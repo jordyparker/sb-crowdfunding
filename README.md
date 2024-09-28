@@ -69,7 +69,7 @@ Crowdfunding platform to allow people in need receive money from anyone interest
 
 
 ## Api Documentation
-Postman was used for testing and documenting the api. Access the documentation via this [https://www.postman.com/red-robot-194694/workspace/sb-crowdfunding-api](link).
+Postman was used for testing and documenting the api. Access the documentation via this [link](https://www.postman.com/red-robot-194694/workspace/sb-crowdfunding-api).
 
 
 ### Document Created & Modification Date
