@@ -26,7 +26,7 @@ class DonationCampaignController extends Controller
         $campaigns = DonationCampaign::query()
             ->with(['category', 'creator', 'receiver'])
             ->withCount('donations')
-            ->withSum('donations', 'base_amount')
+            ->withSum('donations', 'amount')
             ->when($search = request('search'), function ($q) use ($search) {
                 return $q->where(function ($q) use ($search) {
                     $q->where('name', 'like', '%' . $search . '%')
@@ -50,17 +50,13 @@ class DonationCampaignController extends Controller
                 return $q->where('creator_id', $user)
                     ->where('creator_type', User::class);
             })
-            ->orderBy(request('created_at', 10), request('dir', 'desc'))
+            ->orderBy(request('order_by', 'created_at'), request('dir', 'desc'))
             ->paginate(request('page_size', 10))
             ->through(function ($campaign) {
                 return DonationCampaignResource::make($campaign);
             });
 
-        return response([
-            'data' => $campaigns,
-            'code' => 'CAMPAIGNS_RETRIEVED',
-            'message' => __('Campaigns successfully retrieved')
-        ], 200);
+        return response($campaigns, 200);
     }
 
     /**

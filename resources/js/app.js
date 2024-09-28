@@ -1,5 +1,10 @@
-import { createApp, h } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
+import '../assets/sass/app.scss';
+
+import Vue from 'vue'
+import store from "./store"
+import { createInertiaApp } from '@inertiajs/vue2'
+import router from './router';
+import "./utils"
 
 createInertiaApp({
   resolve: name => {
@@ -7,8 +12,12 @@ createInertiaApp({
     return pages[`./Pages/${name}.vue`]
   },
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .mount(el)
+    Vue.use(plugin)
+
+    new Vue({
+        store,
+        router,
+      render: h => h(App, props),
+    }).$mount(el)
   },
 })

@@ -32,11 +32,12 @@ class DonationCampaignResource extends JsonResource
             'receiver' => $this->whenLoaded('receiver', fn () => match ($this->receiver_type) {
                 User::class => [
                     'id' => $this->receiver->id,
+                    'name' => $this->receiver->first_name . ' ' . $this->receiver->last_name,
                     'first_name' => $this->receiver->first_name,
                     'last_name' => $this->receiver->last_name,
                     'username' => $this->receiver->username,
                     'avatar' => $this->receiver->avatar ?
-                        asset("storage/{$this->receiver->avatar}") : null,
+                        asset("storage/{$this->receiver->avatar}") : asset('images/avatar.png'),
                     'email' => $this->receiver->email,
                     'phone' => $this->receiver->phone
                 ],
@@ -47,11 +48,12 @@ class DonationCampaignResource extends JsonResource
             'creator' => $this->whenLoaded('creator', fn () => match ($this->creator_type) {
                 User::class => [
                     'id' => $this->creator->id,
-                    'first_name' => $this->creator->first_name,
+                    'name' => $this->creator->first_name . ' ' . $this->creator->last_name,
+                    'first_name' => $this->creator->first_name . ' ' . $this->creator->last_name,
                     'last_name' => $this->creator->last_name,
                     'username' => $this->creator->username,
                     'avatar' => $this->creator->avatar ?
-                        asset("storage/{$this->creator->avatar}") : null,
+                        asset("storage/{$this->creator->avatar}") : asset('images/avatar.png'),
                     'email' => $this->creator->email,
                     'phone' => $this->creator->phone
                 ],
@@ -59,8 +61,13 @@ class DonationCampaignResource extends JsonResource
             }),
             'donations' => $this->whenLoaded('donations', fn () => DonationResource::collection($this->donations)),
             'total_donations_count' => $this->whenCounted('donations'),
-            'total_donations_amount' => $this->whenHas('donations_sum_base_amount', function () {
-                return $this->donations_sum_base_amount ?: 0;
+            'total_donations_amount' => $this->whenHas('donations_sum_amount', function () {
+                return $this->donations_sum_amount ?: 0;
+            }),
+            'achieve_percentage' => $this->whenHas('donations_sum_amount', function () {
+                $sum = $this->donations_sum_amount ?: 0;
+                if ($sum > $this->target_amount) return 100;
+                return ceil($sum * 100 / $this->target_amount);
             }),
             'can_receive_donations' => $this->canReceiveDonations(),
             'ends_at' => $this->ends_at?->format('d M Y H:m'),
